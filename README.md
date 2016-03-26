@@ -1,5 +1,6 @@
 # cura
 [![Build Status](https://travis-ci.org/ct5845/cura.svg?branch=master)](https://travis-ci.org/ct5845/cura)
+[![Code Climate](https://codeclimate.com/github/ct5845/cura/badges/gpa.svg)](https://codeclimate.com/github/ct5845/cura)
 
 Club User Management, User Accounts, Resource Booking, Activity Logs, Treasury and Subscriptions. 
 
