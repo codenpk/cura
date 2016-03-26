@@ -6,8 +6,7 @@
   "scripts": {
     "prestart": "gulp build:server",
     "start": "node dist/server/server.js",
-    "test": "jasmine",
-    "posttest": "istanbul cover jasmine"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
