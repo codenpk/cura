@@ -10,7 +10,7 @@ module.exports = {
     entry: path.resolve(__dirname,'../source/server/bootstrap.js'),
     target: 'node',
     output: {
-        path: __dirname + '/../dist/server',
+        path: path.resolve(__dirname, '/../dist/server'),
         filename: "server.js"
     },
 
