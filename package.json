@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "prestart" : "gulp build:server",
-    "start" : "node dist/server/server.js"
+    "start" : "node dist/server/server.js",
+    "test" : "node source/server/test.js"
   },
   "repository": {
     "type": "git",
