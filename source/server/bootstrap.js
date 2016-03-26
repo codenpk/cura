@@ -8,3 +8,7 @@ let server = require('socket.io')();
 server.listen(3000, () => {
     console.log('Socket.io server is listening');
 });
+
+function uncoveredFunc(x) {
+    return x+2;
+}

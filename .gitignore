@@ -1,6 +1,3 @@
-### Example user template template
-### Example user template
-
 # IntelliJ project files
 .idea
 out
@@ -13,5 +10,5 @@ dist
 #node moudles
 node_modules
 
-#secret files
-***secret***
+# code coverage files
+coverage
