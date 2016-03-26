@@ -4,9 +4,9 @@
   "description": "Club User Management, User Accounts, Resource Booking, Activity Logs, Treasury and Subscriptions.",
   "main": "",
   "scripts": {
-    "prestart" : "gulp build:server",
-    "start" : "node dist/server/server.js",
-    "test" : "node source/server/test.js"
+    "prestart": "gulp build:server",
+    "start": "node dist/server/server.js",
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -35,5 +35,8 @@
     "nodemon": "1.9.1",
     "socket.io": "1.4.5",
     "webpack": "1.12.14"
+  },
+  "devDependencies": {
+    "jasmine": "^2.4.1"
   }
 }
