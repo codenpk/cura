@@ -1,7 +1,7 @@
 'use strict';
 
-describe('Server Creation', () => {
-    it('works', () => {
-        expect(true).toBe(true);
+describe('Server starting up', () => {
+    it('has no unexpected errors', () => {
+        expect( () => require('../../dist/server/server')).not.toThrow();
     });
 });
