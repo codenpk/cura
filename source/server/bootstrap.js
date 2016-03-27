@@ -1,10 +1,3 @@
-import { config } from './config';
+import server from './components/server';
 
-let mongoose = require('mongoose');
-mongoose.connect(config.mongo.uri, config.mongo.options);
-
-let server = require('socket.io')();
-
-server.listen(3000, () => {
-    console.log('Socket.io server is listening');
-});
+server.open();
