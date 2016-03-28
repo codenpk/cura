@@ -2,6 +2,14 @@
 import app from './app';
 
 describe('app', () => {
+    beforeAll((cb) => {
+       app.start().then( () => cb());
+    });
+
+    afterAll((cb) => {
+        app.stop().then( () => cb());
+    });
+
     it('allows a correct connection', (done) => {
         let socket = require('socket.io-client')('http://localhost:3000');
 

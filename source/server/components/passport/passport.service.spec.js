@@ -11,6 +11,14 @@ function addUser(user) {
 describe('Passport Service', () => {
     let socket;
 
+    beforeAll((cb) => {
+        app.start().then( () => cb());
+    });
+
+    afterAll((cb) => {
+        app.stop().then( () => cb());
+    });
+
     beforeEach( () => {
         mongoose.connection.db.dropDatabase();
     });

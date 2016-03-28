@@ -7,7 +7,15 @@ let mongoose = require('mongoose');
 describe('User Service', () => {
     let socket;
 
-    beforeEach( () => {
+    beforeAll((cb) => {
+        app.start().then( () => cb());
+    });
+
+    afterAll((cb) => {
+        app.stop().then( () => cb());
+    });
+
+    beforeEach(() => {
         mongoose.connection.db.dropDatabase();
     });
 
@@ -25,7 +33,8 @@ describe('User Service', () => {
             done();
         });
 
-        socket.on('user_error', () => {
+        socket.on('user_error', (err) => {
+            console.log(err);
             fail('Adding a user failed');
             done();
         });
