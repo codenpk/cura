@@ -3,7 +3,7 @@ export class PassportService {
         this.server = io.of('passport');
 
         this.server.on('connection', socket => {
-           socket.emit('connected');
+            socket.emit('connected');
         });
     }
 }
