@@ -1,3 +1,3 @@
-import server from './components/server';
+import app from './components/app';
 
-server.open();
+app.start();

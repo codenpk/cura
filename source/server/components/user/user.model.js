@@ -5,8 +5,9 @@ let UserSchema = new mongoose.Schema({
     email: String,
     name: String,
     hashedPassword: String,
+    sessionSecret: String,
     salt: String,
-    roles: [String]
+    roles: { type: [String], default: ['user'] }
 });
 
 UserSchema

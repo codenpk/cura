@@ -1,4 +1,4 @@
-export const config = {
+export default {
     session: process.env.SESSIONTOKEN || 'sessionToken',
     activation: process.env.ACTIVATIONTOKEN || 'activationToken',
     mongo: {

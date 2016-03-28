@@ -1,27 +1,29 @@
-import { config } from '../config';
+import config from '../config';
 import { Routes } from './routes';
 
 let mongoose = require('mongoose');
 let sio = require('socket.io')();
 
-class Server {
+class App {
     constructor(){
         this.routes = new Routes(sio);
+
+        this.start();
     }
 
-    open (){
+    start (){
         mongoose.connect(config.mongo.uri, config.mongo.options);
         sio.listen(3000, () => { });
     }
 
-    close(){
+    stop(){
         mongoose.disconnect();
-        sio.close(() => {
-            console.log("CALLBACK DONE!");
-        });
+        sio.close();
     }
+
+
 }
 
-let server = new Server();
+let app = new App();
 
-export default server;
+export default app;

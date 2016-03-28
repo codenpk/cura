@@ -1,15 +1,7 @@
 'use strict';
-import server from './server';
+import app from './app';
 
-describe('server', () => {
-    beforeAll( () => {
-       server.open();
-    });
-
-    afterAll( () => {
-       server.close();
-    });
-
+describe('app', () => {
     it('allows a correct connection', (done) => {
         let socket = require('socket.io-client')('http://localhost:3000');
 
