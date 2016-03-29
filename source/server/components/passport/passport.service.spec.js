@@ -19,7 +19,7 @@ describe('Passport Service', () => {
     afterAll((cb) => {
         app.stop().then( () => cb());
     });
-    
+
     afterEach( () => {
         socket.disconnect(true);
         mongoose.connection.db.dropDatabase();
@@ -60,7 +60,7 @@ describe('Passport Service', () => {
             });
         });
     });
-    
+
     it('returns a valid passport for a user with the correct credentials', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 

@@ -12,7 +12,7 @@ class App {
 
     start (){
         mongoose.connect(config.mongo.uri, config.mongo.options);
-        server.listen(config.server.port);
+        server.listen(3000);
 
         return new Promise(resolve => setTimeout( () => resolve()), 1500);
     }

@@ -1,73 +1,88 @@
 let jwt = require('jsonwebtoken');
 import User from '../user/user.model';
 import config from '../../config/config';
+import {PassportModel} from './passport.model';
 
-function guestPassport(token) {
-    return {
-        authenticated: false,
-        token: token || jwt.sign({ guest: true, _id: random()}, config.session),
-        details: {
-            roles: ['guest']
-        }
-    }
-}
-
-function random(){
+function random() {
     return Math.random().toString(36).substr(2, 9);
 }
 
+function guestPassport(token) {
+    return new PassportModel(
+        false,
+        token || jwt.sign({guest: true, _id: random()}, config.session),
+        {
+            roles: ['guest']
+        }
+    );
+}
+
 function userPassport(user) {
-    return {
-        authenticated: true,
-        token: jwt.sign({ _id: user._id }, config.session),
-        details: user
-    }
+    return new PassportModel(
+        true,
+        jwt.sign({_id: user._id}, config.session),
+        user
+    )
 }
 
 export class PassportService {
-    constructor (io) {
+    constructor(io) {
         this.server = io.of('passport');
 
         this.server.on('connection', socket => {
             let token = socket.handshake.query.token;
+            console.log(token + '\n');
 
-            this._loginWithToken(socket, token);
+            this.loginWithToken(socket, token);
 
-            socket.on('passport_login', request => this._loginWithCredentials(socket, request));
+            socket.on('passport_login', request => this.loginWithCredentials(socket, request));
         });
     }
 
-    _loginWithCredentials(socket, credentials) {
-        User
-            .findOne({ email: credentials.email })
-            .exec()
-            .then( user => {
-                if (user.authenticate(credentials.password)) {
-                    socket.emit('passport_change', userPassport(user));
-                } else {
-                    socket.emit('passport_error', 'invalid credentials' );
-                }
-            })
-            .catch( () => socket.emit('passport_error', 'invalid credentials' ));
+    loginWithCredentials(socket, credentials) {
+        return new Promise( (resolve, reject) => {
+            User
+                .findOne({email: credentials.email})
+                .exec()
+                .then(user => {
+                    if (user.authenticate(credentials.password)) {
+                        if (socket) socket.emit('passport_change', userPassport(user));
+                        else resolve(userPassport(user));
+                    } else {
+                        if (socket) socket.emit('passport_error', 'invalid credentials');
+                        else reject();
+                    }
+                })
+                .catch(() => {
+                    if (socket) socket.emit('passport_error', 'invalid credentials');
+                    else reject();
+                });
+        });
     }
 
-    _loginWithToken(socket, token) {
-        new Promise(resolve => {
+    loginWithToken(socket, token) {
+        let promise = new Promise(resolve => {
             jwt.verify(token, config.session, (err, decoded) => {
-                if(err || decoded.guest === true) {
+                if (err || decoded.guest === true) {
                     resolve(guestPassport(token));
                 } else {
                     User
-                        .findOne({ _id: decoded._id })
+                        .findOne({_id: decoded._id})
                         .exec()
-                        .then( user => {
+                        .then(user => {
                             resolve(userPassport(user))
                         })
-                        .catch( () => resolve(guestPassport()))
+                        .catch(() => resolve(guestPassport()))
                 }
             });
-        }).then ( passport => {
-            socket.emit('passport_value', passport);
         });
+
+        if (socket) {
+            promise.then(passport => {
+                socket.emit('passport_value', passport);
+            });
+        } else {
+            return promise;
+        }
     }
 }
