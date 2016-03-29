@@ -28,6 +28,8 @@ describe('Passport Service', () => {
     it('gives a guest passport on connection with no token', (done) => {
         socket = io.connect(`${config.server.uri}/passport`);
 
+        socket.emit('authenticate');
+
         socket.on('passport_value', passport => {
             expect(passport.authenticated).toBe(false);
             expect(passport.details.roles).toEqual(['guest']);
@@ -36,7 +38,9 @@ describe('Passport Service', () => {
     });
 
     it('gives a guest passport on connection with a invalid token', (done) => {
-        socket = io.connect(`${config.server.uri}/passport`, {query: `token=sddddsddaass`});
+        socket = io.connect(`${config.server.uri}/passport`);
+
+        socket.emit('authenticate', 'sddddsddaass');
 
         socket.on('passport_value', passport => {
             expect(passport.authenticated).toBe(false);
@@ -46,12 +50,12 @@ describe('Passport Service', () => {
     });
 
     it('returns the same guest passport on connection with a valid guest passport', (done) => {
-        socket = io.connect(`${config.server.uri}/passport`, {query: `token=sddddsddaass`});
+        socket = io.connect(`${config.server.uri}/passport`);
+
+        socket.emit('authenticate', 'sddddsddaass');
 
         socket.once('passport_value', passport => {
-            socket.disconnect(true);
-
-            socket = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token}`});
+            socket.emit('authenticate',passport.token);
 
             socket.once('passport_value', newPassport => {
                 expect(newPassport.authenticated).toBe(false);
@@ -65,6 +69,8 @@ describe('Passport Service', () => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
         socket = io.connect(`${config.server.uri}/passport`);
+
+        socket.emit('authenticate');
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -85,6 +91,8 @@ describe('Passport Service', () => {
 
         socket = io.connect(`${config.server.uri}/passport`);
 
+        socket.emit('authenticate');
+
         socket.once('passport_value', () => {
             userPromise.then( () => {
                 socket.emit('passport_login', { });
@@ -101,6 +109,8 @@ describe('Passport Service', () => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
         socket = io.connect(`${config.server.uri}/passport`);
+
+        socket.emit('authenticate');
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -119,6 +129,8 @@ describe('Passport Service', () => {
 
         socket = io.connect(`${config.server.uri}/passport`);
 
+        socket.emit('authenticate');
+
         socket.once('passport_value', () => {
             userPromise.then( () => {
                 socket.emit('passport_login', { email: 'john.smith@gmail.com', password: 'jimmycricket' });
@@ -136,6 +148,8 @@ describe('Passport Service', () => {
 
         socket = io.connect(`${config.server.uri}/passport`);
 
+        socket.emit('authenticate');
+
         // get guest passport then login
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -147,7 +161,9 @@ describe('Passport Service', () => {
         socket.on('passport_change', passport => {
             socket.disconnect(true);
 
-            let socket2 = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token}`} );
+            let socket2 = io.connect(`${config.server.uri}/passport`);
+
+            socket2.emit('authenticate',passport.token);
 
             socket2.on('passport_value', passport2 => {
                 socket2.disconnect(true);
@@ -162,6 +178,8 @@ describe('Passport Service', () => {
 
         socket = io.connect(`${config.server.uri}/passport`);
 
+        socket.emit('authenticate');
+
         // get guest passport then login
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -173,7 +191,9 @@ describe('Passport Service', () => {
         socket.on('passport_change', passport => {
             socket.disconnect(true);
 
-            let socket2 = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token.toUpperCase()}`} );
+            let socket2 = io.connect(`${config.server.uri}/passport`);
+
+            socket2.emit('authenticate',passport.token.toUpperCase());
 
             socket2.on('passport_value', passport2 => {
                 socket2.disconnect(true);

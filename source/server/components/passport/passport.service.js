@@ -30,10 +30,7 @@ export class PassportService {
         this.server = io.of('passport');
 
         this.server.on('connection', socket => {
-            let token = socket.handshake.query.token;
-            console.log(token + '\n');
-
-            this.loginWithToken(socket, token);
+            socket.on('authenticate', request => this.loginWithToken(socket, request));
 
             socket.on('passport_login', request => this.loginWithCredentials(socket, request));
         });

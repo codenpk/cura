@@ -12,11 +12,9 @@ function createAdminUser() {
             .then(() => {
                 app.routes.passportService.loginWithCredentials(null, {email: 'admin@user.com', password: 'test'})
                     .then(passport => {
-                        console.log('PASSPORT RECEIVED BY loginWithCredentials\n');
-                        console.log(`token=${passport.token}`);
-                        console.log(`${config.server.uri}/user`);
-                        let con = io(`${config.server.uri}/user`, { query: 'token=bar'});
-                        resolve();
+                        let con = io.connect(`${config.server.uri}/user`);
+                        con.emit('authenticate', passport.token);
+                        resolve(con);
                     });
             });
     });
@@ -160,10 +158,25 @@ describe('User Service', () => {
     // });
 
     it('can add users', (done) => {
-        let socket = io.connect(`${config.server.uri}/user`, {query: `token=sddddsddaass`});
+        createAdminUser().then(adminSocket => {
+            adminSocket.emit('user_add', {email: 'one@test.com', password: 'osoofif'});
 
-        socket.disconnect(true);
-        done();
+            adminSocket.on('user_added', user => {
+                expect(user.email).toBe('one@test.com');
+                expect(user.hashedPassword).not.toBeDefined();
+                expect(user.salt).not.toBeDefined();
+
+                adminSocket.disconnect(true);
+                done();
+            });
+
+            adminSocket.on('user_error', () => {
+                fail();
+                adminSocket.disconnect(true);
+                done();
+            });
+        });
+
         // createAdminUser().then(adminSocket => {
         //     adminSocket.emit('user_add', {email: 'one@test.com', password: 'osoofif'});
         //
@@ -180,7 +193,7 @@ describe('User Service', () => {
         //     done();
         // });
     });
-    
+
 
     // describe('normal user', () => {
     //     it('can view a list of users', (done) => {
