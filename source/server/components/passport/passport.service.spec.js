@@ -1,4 +1,5 @@
 'use strict';
+import config from '../../config/config';
 import app from '../app';
 import User from '../user/user.model';
 import * as io          from 'socket.io-client';
@@ -18,17 +19,14 @@ describe('Passport Service', () => {
     afterAll((cb) => {
         app.stop().then( () => cb());
     });
-
-    beforeEach( () => {
+    
+    afterEach( () => {
+        socket.disconnect(true);
         mongoose.connection.db.dropDatabase();
     });
 
-    afterEach( () => {
-        socket.disconnect(true);
-    });
-
     it('gives a guest passport on connection with no token', (done) => {
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         socket.on('passport_value', passport => {
             expect(passport.authenticated).toBe(false);
@@ -38,7 +36,7 @@ describe('Passport Service', () => {
     });
 
     it('gives a guest passport on connection with a invalid token', (done) => {
-        socket = io.connect('http://localhost:3000/passport', {query: `token=sddddsddaass`});
+        socket = io.connect(`${config.server.uri}/passport`, {query: `token=sddddsddaass`});
 
         socket.on('passport_value', passport => {
             expect(passport.authenticated).toBe(false);
@@ -48,12 +46,12 @@ describe('Passport Service', () => {
     });
 
     it('returns the same guest passport on connection with a valid guest passport', (done) => {
-        socket = io.connect('http://localhost:3000/passport', {query: `token=sddddsddaass`});
+        socket = io.connect(`${config.server.uri}/passport`, {query: `token=sddddsddaass`});
 
         socket.once('passport_value', passport => {
             socket.disconnect(true);
 
-            socket = io.connect('http://localhost:3000/passport', {query: `token=${passport.token}`});
+            socket = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token}`});
 
             socket.once('passport_value', newPassport => {
                 expect(newPassport.authenticated).toBe(false);
@@ -66,7 +64,7 @@ describe('Passport Service', () => {
     it('returns a valid passport for a user with the correct credentials', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -85,7 +83,7 @@ describe('Passport Service', () => {
     it('errors when using logging in with malformed request', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -102,7 +100,7 @@ describe('Passport Service', () => {
     it('errors when using logging in with an invalid email address', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -119,7 +117,7 @@ describe('Passport Service', () => {
     it('errors when using logging in with a valid email address but invalid password', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         socket.once('passport_value', () => {
             userPromise.then( () => {
@@ -136,7 +134,7 @@ describe('Passport Service', () => {
     it('gives the correct passport when logging in with a valid token', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         // get guest passport then login
         socket.once('passport_value', () => {
@@ -149,7 +147,7 @@ describe('Passport Service', () => {
         socket.on('passport_change', passport => {
             socket.disconnect(true);
 
-            let socket2 = io.connect('http://localhost:3000/passport', {query: `token=${passport.token}`} );
+            let socket2 = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token}`} );
 
             socket2.on('passport_value', passport2 => {
                 socket2.disconnect(true);
@@ -162,7 +160,7 @@ describe('Passport Service', () => {
     it('gives a guest passport when logging in with a tampered token', (done) => {
         let userPromise = addUser({ name: 'Test', email: 'test@test.com', password: 'test'});
 
-        socket = io.connect('http://localhost:3000/passport');
+        socket = io.connect(`${config.server.uri}/passport`);
 
         // get guest passport then login
         socket.once('passport_value', () => {
@@ -175,7 +173,7 @@ describe('Passport Service', () => {
         socket.on('passport_change', passport => {
             socket.disconnect(true);
 
-            let socket2 = io.connect('http://localhost:3000/passport', {query: `token=${passport.token.toUpperCase()}`} );
+            let socket2 = io.connect(`${config.server.uri}/passport`, {query: `token=${passport.token.toUpperCase()}`} );
 
             socket2.on('passport_value', passport2 => {
                 socket2.disconnect(true);

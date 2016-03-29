@@ -11,12 +11,7 @@ gulp.task('clean', () => {
     return del(['./dist']);
 });
 
-gulp.task('build:server', ['clean'], (cb) => {
-   // webpack(config).run( (err, stats) => {
-   //     if (err) console.log(`Error ${err}`);
-   //     else console.log(stats.toString());
-   //     cb();
-   // });
+gulp.task('build:server', ['clean'], () => {
     return gulp.src(['./source/server/**/*.js'])
         .pipe(babel({
             presets: ['es2015'],
@@ -28,9 +23,4 @@ gulp.task('build:server', ['clean'], (cb) => {
 gulp.task('test:server', ['build:server'], () => {
    return gulp.src('./dist/server/**/*.spec.js')
        .pipe(jasmine());
-});
-
-
-gulp.task('dev:build', ['test:server'], () => {
-   gulp.watch(['./dist/server/server.js','./source/server/**/*.spec.js'], ['test:server']);
 });

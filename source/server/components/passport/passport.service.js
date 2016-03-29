@@ -1,6 +1,6 @@
 let jwt = require('jsonwebtoken');
 import User from '../user/user.model';
-import config from '../../config';
+import config from '../../config/config';
 
 function guestPassport(token) {
     return {
@@ -48,7 +48,7 @@ export class PassportService {
                     socket.emit('passport_error', 'invalid credentials' );
                 }
             })
-            .catch( err => socket.emit('passport_error', 'invalid credentials' ));
+            .catch( () => socket.emit('passport_error', 'invalid credentials' ));
     }
 
     _loginWithToken(socket, token) {

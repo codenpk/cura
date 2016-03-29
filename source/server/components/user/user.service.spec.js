@@ -1,4 +1,5 @@
 'use strict';
+import config from '../../config/config';
 import app from '../app';
 import User from './user.model';
 import * as io          from 'socket.io-client';
@@ -15,16 +16,13 @@ describe('User Service', () => {
         app.stop().then( () => cb());
     });
 
-    beforeEach(() => {
+    afterEach( () => {
+        socket.disconnect(true);
         mongoose.connection.db.dropDatabase();
     });
 
-    afterEach( () => {
-        socket.disconnect(true);
-    });
-
     it('allows unauthenticated adding of a user when none exist', (done) => {
-        socket = io.connect('http://localhost:3000/user');
+        socket = io.connect(`${config.server.uri}/user`);
         let user = { name: 'Test', email: 'test@test.com', password: 'test'};
 
         socket.emit('user_add', user);
@@ -41,7 +39,7 @@ describe('User Service', () => {
     });
 
     it('doesnt allow unauthenticated adding of a user when another already exists', (done) => {
-        socket = io.connect('http://localhost:3000/user');
+        socket = io.connect(`${config.server.uri}/user`);
         let user = { name: 'Test', email: 'test@test.com', password: 'test'};
 
         new User(user)

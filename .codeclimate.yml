@@ -21,6 +21,7 @@ ratings:
   - "**.py"
   - "**.rb"
 exclude_paths:
+  - "**.spec"
 
 
 ecmaFeatures:

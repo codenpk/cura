@@ -1,4 +1,4 @@
-import config from '../config';
+import config from '../config/config';
 import { Routes } from './routes';
 
 let mongoose = require('mongoose');
@@ -12,7 +12,7 @@ class App {
 
     start (){
         mongoose.connect(config.mongo.uri, config.mongo.options);
-        server.listen(3000);
+        server.listen(config.server.port);
 
         return new Promise(resolve => setTimeout( () => resolve()), 1500);
     }
