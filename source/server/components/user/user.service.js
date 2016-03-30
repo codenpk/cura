@@ -9,7 +9,7 @@ export class UserService {
         this.server = io.of('user');
 
         this.server.on('connection', socket => {
-            this.authenticated = new Promise( (resolve) => {
+            socket.authenticated = new Promise( (resolve) => {
                 socket.once('authenticate', token => {
                     this.passportService.loginWithToken(null, token).then (passport => {
                         passport.joinRooms(socket);
@@ -18,14 +18,18 @@ export class UserService {
                 });
             });
 
-            socket.on('user_add', request => this._add(socket, request));
+            socket.on('user_add', request => {
+                this._add(socket, request);
+            });
 
-            socket.on('user_value', request => this._value(socket, request));
+            socket.on('user_value', request => {
+                this._value(socket, request);
+            });
         });
     }
 
     _add(socket, request){
-        this.authenticated.then(passport => {
+        socket.authenticated.then(passport => {
             User
                 .count()
                 .exec()
@@ -44,10 +48,10 @@ export class UserService {
                             })
                             .catch( err => this.error(socket, err));
                     } else {
-                        this.error(socket, 'Not allowed to add user');
+                        UserService.error(socket, 'Not allowed to add user');
                     }
                 })
-                .catch(err => this.error(socket, err));
+                .catch(err => UserService.error(socket, err));
         });
     }
 
@@ -60,7 +64,7 @@ export class UserService {
     }
 
     _value(socket) {
-        this.authenticated.then(passport => {
+        socket.authenticated.then(passport => {
             User.find()
                 .select('-salt -hashedPassword')
                 .exec()
@@ -74,7 +78,7 @@ export class UserService {
         });
     }
 
-    error(socket, msg) {
+    static error(socket, msg) {
         socket.emit(`user_error`, msg);
     }
 }

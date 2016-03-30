@@ -3,8 +3,7 @@
 let gulp = require('gulp');
 let webpack = require('webpack');
 let babel = require('gulp-babel');
-let config = require('./tools/webpack.server.config');
-let jasmine = require('gulp-jasmine');
+let gulpJasmine = require('gulp-jasmine');
 let del = require('del');
 
 gulp.task('clean', () => {
@@ -22,5 +21,5 @@ gulp.task('build:server', ['clean'], () => {
 
 gulp.task('test:server', ['build:server'], () => {
    return gulp.src('./dist/server/**/*.spec.js')
-       .pipe(jasmine());
+       .pipe(gulpJasmine());
 });
