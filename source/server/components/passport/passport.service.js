@@ -1,3 +1,4 @@
+'use strict';
 let jwt = require('jsonwebtoken');
 import User from '../user/user.model';
 import config from '../../config/config';
@@ -22,7 +23,7 @@ function userPassport(user) {
         true,
         jwt.sign({_id: user._id}, config.session),
         user
-    )
+    );
 }
 
 export class PassportService {
@@ -43,16 +44,28 @@ export class PassportService {
                 .exec()
                 .then(user => {
                     if (user.authenticate(credentials.password)) {
-                        if (socket) socket.emit('passport_change', userPassport(user));
-                        else resolve(userPassport(user));
+                        if (socket) {
+                            socket.emit('passport_change', userPassport(user));
+                        }
+                        else {
+                            resolve(userPassport(user));
+                        }
                     } else {
-                        if (socket) socket.emit('passport_error', 'invalid credentials');
-                        else reject();
+                        if (socket) {
+                            socket.emit('passport_error', 'invalid credentials');
+                        }
+                        else {
+                            reject();
+                        }
                     }
                 })
                 .catch(() => {
-                    if (socket) socket.emit('passport_error', 'invalid credentials');
-                    else reject();
+                    if (socket) {
+                        socket.emit('passport_error', 'invalid credentials');
+                    }
+                    else {
+                        reject();
+                    }
                 });
         });
     }
@@ -67,9 +80,9 @@ export class PassportService {
                         .findOne({_id: decoded._id})
                         .exec()
                         .then(user => {
-                            resolve(userPassport(user))
+                            resolve(userPassport(user));
                         })
-                        .catch(() => resolve(guestPassport()))
+                        .catch(() => resolve(guestPassport()));
                 }
             });
         });

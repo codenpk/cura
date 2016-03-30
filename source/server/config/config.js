@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === 'test') {
     config.server.port = process.env.SERVERPORT || 3001;
     config.server.uri = process.env.SERVERURI || 'http://localhost:3001';
 
-    config.mongo.uri = process.env.MONGOURI || 'mongodb://localhost/cura-test'
+    config.mongo.uri = process.env.MONGOURI || 'mongodb://localhost/cura-test';
 }
 
 export default config;
