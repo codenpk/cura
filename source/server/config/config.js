@@ -1,3 +1,5 @@
+'use strict';
+
 let config = {
     session: process.env.SESSIONTOKEN || 'sessionToken',
     activation: process.env.ACTIVATIONTOKEN || 'activationToken',

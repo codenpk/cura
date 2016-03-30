@@ -60,7 +60,7 @@
     "bitwise":true,
     "curly":true,
     "undef":true,
-    "nonew":true,
+    "nonew":false,
     "forin":true,
     "esversion": 6
   }

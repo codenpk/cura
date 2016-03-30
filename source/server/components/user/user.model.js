@@ -1,3 +1,4 @@
+'use strict';
 let mongoose = require('mongoose');
 let crypto = require('crypto');
 
@@ -25,7 +26,9 @@ UserSchema.methods = {
         return crypto.randomBytes(16).toString('base64');
     },
     encryptPassword: function(password) {
-        if (!password || !this.salt) return '';
+        if (!password || !this.salt) {
+            return '';
+        }
         let salt = new Buffer(this.salt, 'base64');
         return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
     }

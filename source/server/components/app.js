@@ -1,3 +1,4 @@
+'use strict';
 import config from '../config/config';
 import { Routes } from './routes';
 

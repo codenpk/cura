@@ -1,3 +1,5 @@
+'use strict';
+
 export class PassportModel {
     constructor (authenticated, token, user){
         this.authenticated = authenticated || false;

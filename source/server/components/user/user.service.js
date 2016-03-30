@@ -1,3 +1,4 @@
+'use strict';
 import User from './user.model';
 import pick from 'lodash/pick';
 
@@ -31,7 +32,9 @@ export class UserService {
                 .then((count) => {
                     if (count === 0 || passport.isInRole('membership')) {
 
-                        if (count === 0) request.roles = ['user','membership','admin'];
+                        if (count === 0) {
+                            request.roles = ['user','membership','admin'];
+                        }
 
                         new User(request)
                             .save()
@@ -56,7 +59,7 @@ export class UserService {
 
     }
 
-    _value(socket, request) {
+    _value(socket) {
         this.authenticated.then(passport => {
             User.find()
                 .select('-salt -hashedPassword')

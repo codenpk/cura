@@ -1,9 +1,10 @@
 # cura
 [![Build Status](https://travis-ci.org/ct5845/cura.svg?branch=master)](https://travis-ci.org/ct5845/cura)
-[![Code Climate](https://codeclimate.com/github/ct5845/cura/badges/gpa.svg)](https://codeclimate.com/github/ct5845/cura)
-[![Issue Count](https://codeclimate.com/github/ct5845/cura/badges/issue_count.svg)](https://codeclimate.com/github/ct5845/cura)
-![Dependencies](https://david-dm.org/ct5845/cura.svg)
+[![bitHound Overall Score](https://www.bithound.io/github/ct5845/cura/badges/score.svg)](https://www.bithound.io/github/ct5845/cura)
+[![bitHound Dependencies](https://www.bithound.io/github/ct5845/cura/badges/dependencies.svg)](https://www.bithound.io/github/ct5845/cura/master/dependencies/npm)
+[![bitHound Dev Dependencies](https://www.bithound.io/github/ct5845/cura/badges/devDependencies.svg)](https://www.bithound.io/github/ct5845/cura/master/dependencies/npm)
 [![bitHound Code](https://www.bithound.io/github/ct5845/cura/badges/code.svg)](https://www.bithound.io/github/ct5845/cura)
+
 
 Club User Management, User Accounts, Resource Booking, Activity Logs, Treasury and Subscriptions. 
 
