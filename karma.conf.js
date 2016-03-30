@@ -72,5 +72,5 @@ module.exports = function(config) {
             presets: ['es2015']
         }
     }
-  })
+  });
 };

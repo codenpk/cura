@@ -3,3 +3,6 @@ node_js:
   - "5"
 
 services: mongodb
+
+after_success:
+  - bithound check git@github.com:ct5845/cura.git
