@@ -3,6 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/ct5845/cura/badges/gpa.svg)](https://codeclimate.com/github/ct5845/cura)
 [![Issue Count](https://codeclimate.com/github/ct5845/cura/badges/issue_count.svg)](https://codeclimate.com/github/ct5845/cura)
 ![Dependencies](https://david-dm.org/ct5845/cura.svg)
+[![bitHound Code](https://www.bithound.io/github/ct5845/cura/badges/code.svg)](https://www.bithound.io/github/ct5845/cura)
 
 Club User Management, User Accounts, Resource Booking, Activity Logs, Treasury and Subscriptions. 
 
