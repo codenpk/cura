@@ -1,6 +1,7 @@
 'use strict';
 import User from './user.model';
 import pick from 'lodash/pick';
+import { UserValidate} from '../../../shared/user/user-validate';
 
 export class UserService {
     constructor(io, passportService) {
@@ -31,13 +32,16 @@ export class UserService {
     _add(socket, request){
         socket.authenticated.then(passport => {
             User
-                .count()
+                .find()
                 .exec()
-                .then((count) => {
-                    if (count === 0 || passport.isInRole('membership')) {
-
-                        if (count === 0) {
+                .then((users) => {
+                    if (users.length === 0 || passport.isInRole('membership')) {
+                        if (users.length === 0) {
                             request.roles = ['user','membership','admin'];
+                        }
+                        
+                        if (!UserValidate.isUnique(request.email, users.map(item => item.email ))){
+                            UserService.error(socket, 'User is not unique');
                         }
 
                         new User(request)
@@ -46,7 +50,7 @@ export class UserService {
                                 this.server.to('user').emit('user_added', pick(saved, ['email', 'name', 'roles']));
                                 this.server.to('guest').emit('user_added');
                             })
-                            .catch( err => this.error(socket, err));
+                            .catch( err => UserService.error(socket, err));
                     } else {
                         UserService.error(socket, 'Not allowed to add user');
                     }

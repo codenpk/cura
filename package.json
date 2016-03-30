@@ -7,7 +7,7 @@
     "prestart": "gulp build:server",
     "start": "node dist/server/server.js",
     "pretest": "gulp build:server",
-    "test": "gulp test:server"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",

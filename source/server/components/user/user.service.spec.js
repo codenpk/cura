@@ -62,6 +62,53 @@ describe('User Service', () => {
         mongoose.connection.db.dropDatabase();
     });
 
+    describe('adding user validation', () => {
+        it('requires an email address', (done) => {
+            createAdminUser().then(socket => {
+                socket.emit('user_add', {name: 'John', password: 'skfkf'});
+
+                socket.on('user_added', () => {
+                    fail();
+                    done();
+                });
+
+                socket.on('user_error', () => {
+                    done();
+                });
+            });
+        });
+        
+        it('requires a name', (done) => {
+            createAdminUser().then(socket => {
+                socket.emit('user_add', {email: 'John@test.com', password: 'skfkf'});
+
+                socket.on('user_added', () => {
+                    fail();
+                    done();
+                });
+
+                socket.on('user_error', () => {
+                    done();
+                });
+            });
+        });
+        
+        it('has a unique email address', (done) => {
+            createAdminUser().then(socket => {
+                socket.emit('user_add', {email: 'admin@user.com', name: 'whocares', password: 'skfkf'});
+
+                socket.on('user_added', () => {
+                    fail();
+                    done();
+                });
+
+                socket.on('user_error', () => {
+                    done();
+                });
+            });
+        });
+    });
+
     describe('guest user', () => {
         it(`can create the a user if there's no previously created`, (done) => {
             let socket = connect();
@@ -137,7 +184,7 @@ describe('User Service', () => {
             createAdminUser().then(adminSocket => {
                 let guestSocket = connect();
 
-                adminSocket.emit('user_add', {email: 'anewUser@gmail.com', password: 'default'});
+                adminSocket.emit('user_add', {name: 'bob', email: 'anewUser@gmail.com', password: 'default'});
 
                 guestSocket.on('user_added', user => {
                     expect(user).not.toBeDefined();
@@ -188,15 +235,28 @@ describe('User Service', () => {
         it('is informed when a user is added', (done) => {
             createAdminUser().then(adminSocket => {
                 createNormalUser('bob').then(normalSocket => {
-                    adminSocket.emit('user_add', {email: 'anewUser@gmail.com', password: 'default'});
+                    adminSocket.emit('user_add', {name: 'john', email: 'anewUser@gmail.com', password: 'default'});
 
                     normalSocket.on('user_added', user => {
-                        expect(user.email).toBe('anewUser@gmail.com');
+                        expect(user.email).toBe('anewuser@gmail.com');
                         expect(user.password).not.toBeDefined();
                         expect(user.hashedPassword).not.toBeDefined();
                         expect(user.salt).not.toBeDefined();
                         done();
                     });
+                });
+            });
+        });
+    });
+
+    describe('admin user', () => {
+        it('can add a user', (done) => {
+            createAdminUser().then(socket => {
+                socket.emit('user_add', {name: 'john', email: 'test@newuser.com', password: 'skfkf'});
+
+                socket.on('user_added', user => {
+                    expect(user.email).toBe('test@newuser.com');
+                    done();
                 });
             });
         });

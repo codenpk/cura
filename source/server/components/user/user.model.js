@@ -3,13 +3,15 @@ let mongoose = require('mongoose');
 let crypto = require('crypto');
 
 let UserSchema = new mongoose.Schema({
-    email: String,
-    name: String,
+    email: {type : String, lowercase: true, required: true },
+    name: {type: String, lowercase: true, required: true },
     hashedPassword: String,
     sessionSecret: String,
     salt: String,
     roles: { type: [String], default: ['user'] }
 });
+
+UserSchema.path('email').validate();
 
 UserSchema
     .virtual('password')
