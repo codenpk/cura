@@ -3,6 +3,7 @@ let jwt = require('jsonwebtoken');
 import User from '../user/user.model';
 import config from '../../config/config';
 import {PassportModel} from './passport.model';
+import pick from 'lodash/pick';
 
 function random() {
     return Math.random().toString(36).substr(2, 9);
@@ -45,17 +46,17 @@ export class PassportService {
                 .then(user => {
                     if (user.authenticate(credentials.password)) {
                         if (socket) {
-                            socket.emit('passport_change', userPassport(user));
+                            socket.emit('passport_change', userPassport(pick(user, ['_id','email', 'name', 'roles'])));
                         }
                         else {
-                            resolve(userPassport(user));
+                            resolve(userPassport(pick(user, ['_id','email', 'name', 'roles'])));
                         }
                     } else {
                         if (socket) {
                             socket.emit('passport_error', 'invalid credentials');
                         }
                         else {
-                            reject();
+                            reject('invalid credentials');
                         }
                     }
                 })
@@ -64,7 +65,7 @@ export class PassportService {
                         socket.emit('passport_error', 'invalid credentials');
                     }
                     else {
-                        reject();
+                        reject('invalid credentials');
                     }
                 });
         });
@@ -80,7 +81,7 @@ export class PassportService {
                         .findOne({_id: decoded._id})
                         .exec()
                         .then(user => {
-                            resolve(userPassport(user));
+                            resolve(userPassport(pick(user, ['_id','email', 'name', 'roles'])));
                         })
                         .catch(() => resolve(guestPassport()));
                 }

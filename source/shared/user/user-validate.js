@@ -1,3 +1,4 @@
+'use strict';
 export class UserValidate {
     static isRequired(field) {
         field = field.toLowerCase();

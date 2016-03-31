@@ -1,7 +1,7 @@
 'use strict';
 import User from './user.model';
 import pick from 'lodash/pick';
-import { UserValidate} from '../../../shared/user/user-validate';
+import {UserValidate} from '../../../shared/user/user-validate';
 
 export class UserService {
     constructor(io, passportService) {
@@ -10,9 +10,9 @@ export class UserService {
         this.server = io.of('user');
 
         this.server.on('connection', socket => {
-            socket.authenticated = new Promise( (resolve) => {
+            socket.authenticated = new Promise((resolve) => {
                 socket.once('authenticate', token => {
-                    this.passportService.loginWithToken(null, token).then (passport => {
+                    this.passportService.loginWithToken(null, token).then(passport => {
                         passport.joinRooms(socket);
                         resolve(passport);
                     });
@@ -23,13 +23,17 @@ export class UserService {
                 this._add(socket, request);
             });
 
+            socket.on('user_change', request => {
+                this._change(socket, request);
+            });
+
             socket.on('user_value', request => {
                 this._value(socket, request);
             });
         });
     }
 
-    _add(socket, request){
+    _add(socket, request) {
         socket.authenticated.then(passport => {
             User
                 .find()
@@ -37,20 +41,20 @@ export class UserService {
                 .then((users) => {
                     if (users.length === 0 || passport.isInRole('membership')) {
                         if (users.length === 0) {
-                            request.roles = ['user','membership','admin'];
+                            request.roles = ['user', 'membership', 'admin'];
                         }
-                        
-                        if (!UserValidate.isUnique(request.email, users.map(item => item.email ))){
+
+                        if (!UserValidate.isUnique(request.email, users.map(item => item.email))) {
                             UserService.error(socket, 'User is not unique');
                         }
 
                         new User(request)
                             .save()
                             .then((saved) => {
-                                this.server.to('user').emit('user_added', pick(saved, ['email', 'name', 'roles']));
+                                this.server.to('user').emit('user_added', pick(saved, ['_id','email', 'name', 'roles']));
                                 this.server.to('guest').emit('user_added');
                             })
-                            .catch( err => UserService.error(socket, err));
+                            .catch(err => UserService.error(socket, err));
                     } else {
                         UserService.error(socket, 'Not allowed to add user');
                     }
@@ -59,12 +63,34 @@ export class UserService {
         });
     }
 
-    _change(){
+    _change(socket, request) {
+        socket.authenticated.then(passport => {
+            if (!passport.authenticated || !passport.isMeOrInRole(request._id, 'membership')) {
+                UserService.error(socket, 'unauthenticated');
+            } else {
+                User.findOne({_id: request._id})
+                    .exec()
+                    .then(user => {
+                        user.name = request.name;
+                        user.email = request.email;
 
-    }
+                        if (request.password) {
+                            if (!passport.isMe(request._id)) {
+                                UserService.error(socket, "cant alter another persons password");
+                                return;
+                            }
+                            user.password = request.password;
+                        }
 
-    _delete(){
-
+                        user.save()
+                            .then((saved) => {
+                                this.server.to('user').emit('user_changed', pick(saved, ['_id','email', 'name', 'roles']));
+                            })
+                            .catch(err => UserService.error(socket, err));
+                    })
+                    .catch(err => UserService.error(socket, err));
+            }
+        });
     }
 
     _value(socket) {
@@ -72,11 +98,11 @@ export class UserService {
             User.find()
                 .select('-salt -hashedPassword')
                 .exec()
-                .then( users => {
+                .then(users => {
                     if (passport.isInRole('user')) {
-                        socket.emit('user_value', { count: users.length, users: users});
+                        socket.emit('user_value', {count: users.length, users: users});
                     } else {
-                        socket.emit('user_value', { count: users.length, users: []});
+                        socket.emit('user_value', {count: users.length, users: []});
                     }
                 });
         });

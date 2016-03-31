@@ -77,7 +77,7 @@ describe('User Service', () => {
                 });
             });
         });
-        
+
         it('requires a name', (done) => {
             createAdminUser().then(socket => {
                 socket.emit('user_add', {email: 'John@test.com', password: 'skfkf'});
@@ -92,7 +92,7 @@ describe('User Service', () => {
                 });
             });
         });
-        
+
         it('has a unique email address', (done) => {
             createAdminUser().then(socket => {
                 socket.emit('user_add', {email: 'admin@user.com', name: 'whocares', password: 'skfkf'});
@@ -104,6 +104,283 @@ describe('User Service', () => {
 
                 socket.on('user_error', () => {
                     done();
+                });
+            });
+        });
+    });
+
+    describe('changing a users details', () => {
+        describe('guest user', () => {
+            it('spurious attempt fails', (done) => {
+                let socket = connect();
+
+                socket.emit('user_change', {});
+
+                socket.on('user_error', () => {
+                    done();
+                });
+            });
+
+            it('cant alter anyones details', (done) => {
+                createNormalUser('john').then(normalUser => {
+                    let socket = connect();
+
+                    normalUser.emit('user_value');
+
+                    normalUser.on('user_value', data => {
+                        let user = data.users[0];
+                        user.name = 'bob';
+
+                        socket.emit('user_change', user);
+                    });
+
+                    socket.on('user_error', () => {
+                        done();
+                    });
+                });
+            });
+
+            it('not notified of a change in a users details', (done) => {
+                createNormalUser('john').then(normalUser => {
+                    let socket = connect();
+                    let normalChanged = false;
+                    let unauthChanged = false;
+
+                    normalUser.emit('user_value');
+
+                    normalUser.on('user_value', data => {
+                        let user = data.users[0];
+                        user.name = 'bob';
+
+                        normalUser.emit('user_change', user);
+                    });
+
+                    normalUser.on('user_changed', () => {
+                        normalChanged = true;
+                    });
+
+                    socket.on('user_changed', () => {
+                        unauthChanged = true;
+                    });
+
+                    setTimeout(() => {
+                        expect(normalChanged).toBe(true);
+                        expect(unauthChanged).toBe(false);
+                        done();
+                    }, 1000);
+                });
+            });
+        });
+
+        describe('normal user', () => {
+            it('can alter own name', (done) => {
+                createNormalUser('john').then(socket => {
+                    socket.emit('user_value');
+
+                    socket.on('user_value', data => {
+                        let user = data.users[0];
+                        user.name = 'bob';
+
+                        socket.emit('user_change', user);
+
+                        socket.on('user_changed', update => {
+                            expect(update.email).toEqual(user.email);
+                            expect(update.name).toEqual(user.name);
+                            done();
+                        });
+                    });
+
+                    socket.on('user_error', err => {
+                        fail(err);
+                        done();
+                    });
+                });
+            });
+
+            it('can alter own email', (done) => {
+                createNormalUser('john').then(socket => {
+                    socket.emit('user_value');
+
+                    socket.on('user_value', data => {
+                        let user = data.users[0];
+                        user.email = 'bob@tyyy.com';
+
+                        socket.emit('user_change', user);
+
+                        socket.on('user_changed', update => {
+                            expect(update.email).toEqual(user.email);
+                            expect(update.name).toEqual(user.name);
+                            done();
+                        });
+                    });
+
+                    socket.on('user_error', err => {
+                        fail(err);
+                        done();
+                    });
+                });
+            });
+
+            it('can alter own password', (done) => {
+                createNormalUser('john').then(socket => {
+                    socket.emit('user_value');
+
+                    socket.on('user_value', data => {
+                        let user = data.users[0];
+                        user.password = 'passwordNew';
+
+                        socket.emit('user_change', user);
+
+                        socket.on('user_changed', () => {
+                            app.routes.passportService.loginWithCredentials(null,
+                                {email: 'john@user.com', password: 'passwordNew'})
+                                .then(passport => {
+                                    expect(passport.authenticated).toBe(true);
+                                    expect(passport.details.email).toBe('john@user.com');
+                                    done();
+                                })
+                                .catch(err => {
+                                    fail(err);
+                                    done();
+                                });
+                        });
+                    });
+
+                    socket.on('user_error', err => {
+                        fail(err);
+                        done();
+                    });
+                });
+            });
+
+            it('cant alter anothers name', (done) => {
+                createNormalUser('john').then(john => {
+                    createNormalUser('bob').then(bob => {
+                        bob.emit('user_value');
+
+                        bob.on('user_value', data => {
+                            let findJohn = data.users.filter(user => user.name === 'john')[0];
+
+                            findJohn.name = 'margret';
+
+                            bob.emit('user_change', findJohn);
+                        });
+
+                        bob.on('user_changed', () => {
+                            fail('allowed user to alter anothers data');
+                            done();
+                        });
+
+                        bob.on('user_error', () => {
+                            done();
+                        });
+                    });
+                });
+            });
+
+            it('doesnt incorrectly alter unchanged data', (done) => {
+                createNormalUser('john').then(socket => {
+                    socket.emit('user_value');
+
+                    socket.on('user_value', data => {
+                        let user = data.users[0];
+                        user.name = 'william';
+
+                        socket.emit('user_change', user);
+
+                        socket.on('user_changed', () => {
+                            app.routes.passportService.loginWithCredentials(null,
+                                {email: 'john@user.com', password: 'test'})
+                                .then(passport => {
+                                    expect(passport.authenticated).toBe(true);
+                                    expect(passport.details.email).toBe('john@user.com');
+                                    done();
+                                })
+                                .catch(err => {
+                                    fail(err);
+                                    done();
+                                });
+                        });
+                    });
+
+                    socket.on('user_error', err => {
+                        fail(err);
+                        done();
+                    });
+                });
+            });
+
+            it('is notified when another user makes a change', (done) => {
+                createNormalUser('john').then(john => {
+                    createNormalUser('bob').then(bob => {
+                        bob.emit('user_value');
+
+                        bob.on('user_value', data => {
+                            let wendy = data.users.filter(user => user.name === 'bob')[0];
+
+                            wendy.name = 'wendy';
+
+                            bob.emit('user_change', wendy);
+                        });
+
+                        john.on('user_changed', user => {
+                            expect(user.name).toBe('wendy');
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('admin user', () => {
+            it('can alter anothers personal details', (done) => {
+                createAdminUser().then(admin => {
+                    createNormalUser('bob').then(bob => {
+                        admin.emit('user_value');
+
+                        admin.on('user_value', data => {
+                            let margret = data.users.filter(user => user.name === 'bob')[0];
+
+                            margret.name = 'margret';
+
+                            admin.emit('user_change', margret);
+                        });
+
+                        admin.on('user_changed', (user) => {
+                            expect(user.name).toBe('margret');
+                            done();
+                        });
+
+                        admin.on('user_error', err => {
+                            fail(err);
+                            done();
+                        });
+                    });
+                });
+            });
+
+            it('cant alter anothers password', (done) => {
+                createAdminUser().then(admin => {
+                    createNormalUser('bob').then(bob => {
+                        admin.emit('user_value');
+
+                        admin.on('user_value', data => {
+                            let bob = data.users.filter(user => user.name === 'bob')[0];
+
+                            bob.password = 'newPassword';
+
+                            admin.emit('user_change', bob);
+                        });
+
+                        admin.on('user_changed', () => {
+                            fail('shouldnt of changed details');
+                            done();
+                        });
+
+                        admin.on('user_error', () => {
+                            done();
+                        });
+                    });
                 });
             });
         });
