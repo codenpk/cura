@@ -1,4 +1,5 @@
 'use strict';
+import config from '../config/config';
 import app from './app';
 
 describe('app', () => {
@@ -11,7 +12,7 @@ describe('app', () => {
     });
 
     it('allows a correct connection', (done) => {
-        let socket = require('socket.io-client')('http://localhost:3000');
+        let socket = require('socket.io-client')(config.server.uri);
 
         socket.on('connect', () => {
             socket.disconnect(true);
@@ -26,7 +27,7 @@ describe('app', () => {
     });
 
     it('refuses a random connection', (done) => {
-        let socket = require('socket.io-client')('http://localhost:3001');
+        let socket = require('socket.io-client')('http://localhost:3003');
 
         socket.on('connect', () => {
             socket.disconnect(true);

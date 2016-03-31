@@ -13,7 +13,7 @@ class App {
 
     start (){
         mongoose.connect(config.mongo.uri, config.mongo.options);
-        server.listen(3000);
+        server.listen(config.server.port);
 
         return new Promise(resolve => setTimeout( () => resolve()), 1500);
     }
@@ -24,8 +24,6 @@ class App {
 
         return new Promise(resolve => setTimeout( () => resolve()), 1500);
     }
-
-
 }
 
 let app = new App();
