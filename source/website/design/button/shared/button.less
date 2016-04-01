@@ -1,0 +1,23 @@
+@import '../../design.typography.less';
+@import '../../design.theme.less';
+
+.button(@selector) {
+  border: none;
+  box-sizing: border-box;
+  font-family: @font-family;
+  font-size: @font-size-normal;
+  padding: 0;
+
+  height: 3rem;
+  line-height: 3rem;
+
+  text-transform: uppercase;
+
+  &:focus {
+      outline: none;
+  }
+
+  .@{selector} {
+    padding: 0 1rem;
+  }
+}

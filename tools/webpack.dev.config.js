@@ -1,7 +1,7 @@
 'use strict';
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var Webpack = require('webpack');
-var path = require('path');
+let HtmlWebpackPlugin = require('html-webpack-plugin');
+let Webpack = require('webpack');
+let path = require('path');
 
 module.exports = {
     entry: [

@@ -102,5 +102,5 @@ gulp.task('run:website', () => {
         contentBase: path.resolve(__dirname, "./source/website")
     });
 
-    server.listen(8000, 'localhost', err => console.log(err));
+    server.listen(8000, 'localhost');
 });

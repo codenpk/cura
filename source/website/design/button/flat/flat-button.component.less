@@ -1,0 +1,12 @@
+@import '../../design.typography.less';
+@import '../../design.theme.less';
+@import '../shared/button.less';
+
+:host {
+  .button(flat-button);
+  background: none;
+
+  &[theme='light'] .flat-button {
+    color: @white-dark;
+  }
+}
