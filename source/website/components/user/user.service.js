@@ -45,4 +45,8 @@ export class UserService {
             });
         });
     }
+
+    static get parameters() {
+        return [[ServerService],[PassportService]];
+    }
 }

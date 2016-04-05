@@ -7,11 +7,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
 </head>
-<body>
+<body style="margin: 0; padding: 0;">
     <div style="font-family: Montserrat; position: fixed; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center">
-        <div style="text-align: center">
-            <h1>Cura</h1>
-            <p>Loading</p>
+        <style>
+            .initial-loading {
+                width: 15rem;
+                height: 15rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                position: relative;
+                animation: rotate 4s infinite;
+                border-radius: 50%;
+            }
+
+            .left {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                transform: rotate(45deg);
+                border-radius: 50%;
+            }
+
+            .top {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                transform: rotate(45deg);
+                border-radius: 50%;
+            }
+
+            .bottom {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                transform: rotate(45deg);
+                border-radius: 50%;
+            }
+
+            .right {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                transform: rotate(45deg);
+                border-radius: 50%;
+            }
+
+            .left {
+                background-color: #FFC107;
+                top: -50%;
+                left: -50%;
+            }
+
+            .top {
+                background-color: #4CAF50;
+                top: -50%;
+                right: -50%;
+            }
+
+            .right {
+                background-color: #009688;
+                bottom: -50%;
+                left: -50%;
+            }
+
+            .bottom {
+                background-color: #2196F3;
+                bottom: -50%;
+                right: -50%;
+            }
+
+            span {
+                animation: stay 4s infinite;
+                font-size: 1rem;
+            }
+
+            @keyframes rotate {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes stay {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(-360deg);
+                }
+            }
+        </style>
+
+        <div class="initial-loading">
+            <div class="left"></div>
+            <div class="top"></div>
+            <div class="bottom"></div>
+            <div class="right"></div>
+            <span>LOADING</span>
         </div>
     </div>
 </body>

@@ -1,0 +1,68 @@
+@import '../../design/design.theme.less';
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  animation: rotate 4s infinite;
+  border-radius: 50%;
+
+  .left,.top,.right,.bottom {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform: rotate(45deg);
+    border-radius: 50%;
+  }
+
+  .left {
+    background-color: @palette-amber-500;
+    top: -50%;
+    left: -50%;
+  }
+
+  .top {
+    background-color: @palette-green-500;
+    top: -50%;
+    right: -50%;
+  }
+
+  .right {
+    background-color: @palette-blue-500;
+    bottom: -50%;
+    left: -50%;
+  }
+
+  .bottom {
+    background-color: @palette-teal-500;
+    bottom: -50%;
+    right: -50%;
+  }
+
+  span {
+    animation: stay 4s infinite;
+    font-size: 1rem;
+  }
+}
+
+@keyframes rotate {
+   from {
+     transform: rotate(0deg);
+   }
+   to {
+     transform: rotate(360deg);
+   }
+ }
+
+@keyframes stay {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
