@@ -8,7 +8,8 @@ import { UserAddComponent }                 from './add/user-add.component';
 @Component({
     selector: 'user',
     directives: [ROUTER_DIRECTIVES],
-    template: `<router-outlet></router-outlet>`
+    template: `<router-outlet></router-outlet>`,
+    styles: [`:host { display: block; }`]
 })
 @RouteConfig([
     { path: '/add',     name: 'Add',        component: UserAddComponent }

@@ -1,3 +1,8 @@
-<span>adding a user</span>
-
-<name-edit></name-edit>
+<cura-card>
+    <form [ngFormModel]="form" (submit)="submit($event)" novalidate>
+        <field name-edit (control)="controlAdd($event)"></field>
+        <field email-edit (control)="controlAdd($event)"></field>
+        <field password-edit (control)="controlAdd($event)"></field>
+        <button cura-raised-button theme="primary" [disabled]="!form.valid">save</button>
+    </form>
+</cura-card>

@@ -5,30 +5,37 @@ import { FieldControl, FieldControlComponent } from '../../../../design';
 
 /* jshint ignore:start */
 @Component({
-    selector: '[name-edit]',
-    outputs: ['control'],
+    selector: '[password-edit]',
     directives: [FieldControlComponent],
-    template: require('./name-edit.component.html'),
-    styles: [require('./name-edit.component.less')]
+    pipes: [],
+    inputs: [],
+    outputs: ['control'],
+    template: require('./password-edit.component.html'),
+    styles: [require('./password-edit.component.less')],
+    host: {}  
 })
 /* jshint ignore:end */
-export class NameEditComponent {
-    constructor() {
+export class PasswordEditComponent {
+    constructor(){
         this.control = new EventEmitter();
 
         this.field = new FieldControl({
-           value: '',
+            value: '',
             messages: {
                 required: {
-                    message: 'Your display name (required)'
+                    message: 'Password to login to the site (required)'
                 }
             },
-            label: 'name',
-            type: 'text'
+            label: 'password',
+            type: 'password'
         }, Validators.compose([Validators.required]));
     }
-    
+
     ngOnInit(){
-        this.control.emit({ name: 'name', control: this.field});
+        this.control.emit({ name: 'password', control: this.field});
+    }
+    
+    static get parameters(){
+        return [];
     }
 }

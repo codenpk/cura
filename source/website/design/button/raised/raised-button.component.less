@@ -1,0 +1,17 @@
+@import '../../design.typography.less';
+@import '../../design.theme.less';
+@import '../shared/button.less';
+
+:host {
+  .button(raised-button);
+
+  &[theme='primary'] .raised-button {
+    background: @primary-shade;
+    color: @white-dark;
+  }
+
+  &[disabled] .raised-button {
+    background: @palette-grey-100;
+    color: @black-light;
+  }
+}

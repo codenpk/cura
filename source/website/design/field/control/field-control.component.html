@@ -1,0 +1,4 @@
+<label [attr.for]="control.id">{{ control.label }}</label>
+<cura-field-messages [control]="control"></cura-field-messages>
+<cura-field-input *ngIf="control.type !== 'custom'" cura-ripple [control]="control"></cura-field-input>
+<ng-content *ngIf="control.type === 'custom'"></ng-content>

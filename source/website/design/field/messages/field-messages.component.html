@@ -1,0 +1,5 @@
+<div
+        *ngFor="#messageKey of messageKeys"
+        [class]="control.classesForErrorString(messageKey)">
+    <p>{{ control.messages[messageKey].message }}</p>
+</div>

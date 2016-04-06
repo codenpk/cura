@@ -1,0 +1,36 @@
+@import '../../design.theme.less';
+
+:host {
+  display: flex;
+  flex-flow: column;
+  opacity: 0.6;
+  transition: opacity 0.25s ease-in;
+
+  :hover > & {
+    opacity: 0.8;
+  }
+
+  &.focus, &.invalid.touched {
+    opacity: 1;
+  }
+}
+
+div {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+p {
+  margin: 0;
+  font-size: 0.785rem;
+  line-height: 1.25rem;
+
+  //.touched.valid > & , .dirty.valid > & {
+  //  color: @palette-green-400;
+  //}
+
+  .touched.invalid > & {
+    color: @palette-red-400;
+  }
+}

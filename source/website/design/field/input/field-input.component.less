@@ -1,0 +1,62 @@
+@import '../../design.theme.less';
+@import '../../design.typography.less';
+
+:host {
+  border: solid 1px @palette-grey-50;
+  border-bottom-width: 2px;
+  border-bottom-color: @palette-grey-400;
+  box-sizing: border-box;
+  position: relative;
+  transition: border 0.25s ease-in;
+
+  &::after {
+    content: "";
+    border: solid 0px @palette-blue-400;
+    border-bottom-width: 2px;
+    position: absolute;
+    top: 0px;
+    left: -1px;
+    pointer-events: none;
+    transition: transform 0.25s ease-in;
+    width: ~"calc(100% + 2px)";
+    height: 100%;
+    transform: scale(0, 1);
+
+    .invalid.touched& {
+      border-color: @palette-red-400;
+      transform: scale(1, 1);
+    }
+  }
+
+  &:hover {
+    border-color: @palette-grey-200;
+    border-bottom-color: @palette-grey-300;
+    &::after {
+      transform: scale(0.5, 1);
+    }
+  }
+
+  &.focus {
+    &::after {
+      transform: scale(1, 1);
+    }
+  }
+
+  &.disabled {
+    border-style: dotted;
+  }
+}
+
+input {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  line-height: 3rem;
+  padding: 0 0.25rem;
+  z-index: 1;
+  box-sizing: border-box;
+  font-family: @font-family;
+}
